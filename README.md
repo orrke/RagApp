@@ -7,23 +7,19 @@ I made it by myself in a language I'm not necessarily an expert in, so if you ha
 
 ### Requirements
 
-You should have a few things setup already for the server to run correctly. Firstly, have a config file. Compared to the directory where the server is, it should be at `./config/server_config.json`. inside of that JSON file, you should have a few fields:
- - bleve_index_path: the path to the bleve index
- - docs_path: the path to your documents
- - model: the model you want to use in ollama
- - language: the language your documents are in, and you want the model to answer in. If null, defaults to English.
- - last_update: this field is managed by the server, you should set it to null initially and let the server handle it.
+The one main requirement is to have an ollama server running in the background, at the address http://127.0.0.1:11434. If you click that link on your computer, it should tell you "Ollama is running".
 
-If this isn't very clear, an example is provided at [examples/server_config.json](examples/server_config.json)
+### First Start
 
-Additionally, the folders you specify inside of that JSON should be created, especially the bleve index path.
-
-You should also have an ollama server running at http://localhost:11434, you should also choose a model that supports tool calling (otherwise the server won't work), and have it already installed through `ollama pull {model name}`.
+If you're running the server for the first time, chances are you didn't setup the config file by yourself. luckily, you don't need to immediately. You can simply run the server, and it will create a default configuration file. However, if you do, you need to specify a path for where the server can find your documents. You can simply do that by specifying the `--docs` flag when running the server. For example:
+```shell
+rag-server --docs "/path/to/your/docs"
+```
 
 ### Running the server
 
 In order to start the server, you can get the binary (or exe) in the releases. In order to launch the server with the base address, you can simply launch the binary. If you want to launch the server at a custom address and port, you can run the server with the following parameters:
-```
+```shell
 rag-server --address {address} --port {port}
 ```
 The address shouldn't have the `http://` prefix at all, simply put the address like `localhost` or `127.0.0.1`. The server defaults to `localhost:5051`.
@@ -84,6 +80,12 @@ This endpoint is used to reset the database of the server. It will use the in-me
 ### /reconfig (GET)
 
 This endpoint is used to resynchronize the in-memory configuration of the server with the on-disk configuration. it will fetch the JSON file and set the configuration to the contents of the file. If you do any modification to the file, make sure to call this endpoint to make sure the server gets updated correctly.
+
+## Configuration
+
+You have some configuration options with this server, it can be configured with the JSON file located at `os.ConfigDir()/server_config.json`. in there, you can specify a custom location for the Bleve index, as well as another directory for the documents, a different model to use in the backend, or another language. please note that, if you change the language, you will have to reload the index (with the /reset endpoint). You can have an example of this config file at [examples/server_config.json](examples/server_config.json). 
+
+In this file, you have a `last_update` field, it is entirely handled by the server. It's meant to represent the last time the database was updated, and serves to not have to re-index every single file every time we start the server again, which can be annoying if you have a lot of documents.
 
 ## Dependencies
 

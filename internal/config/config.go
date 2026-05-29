@@ -3,11 +3,8 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"path"
 	"time"
-)
-
-const (
-	Path = "C:\\RAG\\config\\server_config.json"
 )
 
 // GetConfigFromFile replaces the Config variable with the content of the configuration file at Path
@@ -16,18 +13,28 @@ func GetConfigFromFile() error {
 	Lock.Lock()
 	defer Lock.Unlock() //Unlocks when the function is done
 
-	//Open the configuration file, it's plain text so we don't need an external crate
-	file, err := os.Open(Path)
-	if err != nil {
-		return err
+	configPath := path.Join(Path, "server_config.json")
+
+	if fileExists(configPath) {
+		//Open the configuration file, it's plain text so we don't need an external crate
+		file, err := os.Open(configPath)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		//decode the config file into the ServerConfig struct
+		decoder := json.NewDecoder(file)
+		err = decoder.Decode(&Config)
+
+		return nil
 	}
-	defer file.Close()
 
-	//decode the config file into the ServerConfig struct
-	decoder := json.NewDecoder(file)
-	err = decoder.Decode(&Config)
+	//file doesn't exist, get the default config and save it to the path
+	defaultConfig := ServerConfig{}.Default()
+	Config = defaultConfig
 
-	return nil
+	return SaveConfigToFile()
 }
 
 // SaveConfigToFile saves the current content of the ServerConfig struct into the config file at Path
@@ -36,8 +43,9 @@ func SaveConfigToFile() error {
 	Lock.RLock()
 	defer Lock.RUnlock()
 
-	//Open the file with write permissions
-	file, err := os.OpenFile(Path, os.O_WRONLY, 0)
+	//Open the file with write and create permissions
+	//0644: owner can rw, groups can r and others can r
+	file, err := os.OpenFile(Path, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
@@ -65,4 +73,10 @@ func StoreCurrentDate() error {
 	Lock.Unlock()
 
 	return SaveConfigToFile()
+}
+
+// fileExists checks if a file is present at the specified path
+func fileExists(filename string) bool {
+	_, err := os.Stat(filename)
+	return !os.IsNotExist(err)
 }

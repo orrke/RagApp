@@ -1,6 +1,8 @@
 package config
 
-import "time"
+import (
+	"time"
+)
 
 // ServerConfig is the struct that holds all the parameter the server needs to function
 // It's the struct equivalent of the JSON file at Path
@@ -10,4 +12,14 @@ type ServerConfig struct {
 	Model          string     `json:"model"`
 	Language       string     `json:"language"`
 	LastUpdate     *time.Time `json:"last_update"`
+}
+
+func (s ServerConfig) Default() ServerConfig {
+	return ServerConfig{
+		BleveIndexPath: Path, //gets index.bleve added to it, which contains the actual data
+		DocsPath:       "",   //TODO: put that into a variable at server start
+		Model:          "gemma4:latest",
+		Language:       "en",
+		LastUpdate:     nil,
+	}
 }
