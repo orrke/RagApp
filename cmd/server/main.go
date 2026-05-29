@@ -35,21 +35,20 @@ func main() {
 	time := config.Config.LastUpdate
 	config.Lock.RUnlock()
 
-	//docsPath isn't set by default, meaning the config file is the default one
-	if docsPath == "" {
-		//get the docsPath value from the command line
-		if *serverArgs.docsPath == "" {
-			log.Fatal("docs path is required if no config file is provided. Provide it with the --docs flag")
-		}
-
-		//write the new docs path to the config file
+	//if the user provided an argument for the docs path, then we set it
+	if serverArgs.docsPath != nil {
 		config.Lock.Lock()
 		config.Config.DocsPath = *serverArgs.docsPath
 		config.Lock.Unlock()
-		err = config.SaveConfigToFile()
+		err := config.SaveConfigToFile()
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+
+	//docsPath isn't set by default, meaning the config file is the default one
+	if docsPath == "" {
+		log.Fatal("docs path is required if no config file is provided. Provide it with the --docs flag")
 	}
 
 	//Set the index to the default configuration file value
