@@ -10,7 +10,7 @@ require (
 )
 
 require (
-	git.sr.ht/~emersion/go-scfg v0.0.0-20250102010123-2f3fb2d5d50e // indirect
+	git.sr.ht/~emersion/go-scfg v0.0.0-20230601130942-e042ab15616e // indirect
 	github.com/RoaringBitmap/roaring/v2 v2.18.2 // indirect
 	github.com/bits-and-blooms/bitset v1.24.4 // indirect
 	github.com/blevesearch/bleve_index_api v1.3.12 // indirect
@@ -43,5 +43,3 @@ require (
 	golang.org/x/sys v0.45.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 )
-
-replace git.sr.ht/~emersion/go-scfg => codeberg.org/emersion/go-scfg v0.1.0

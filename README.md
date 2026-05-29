@@ -87,6 +87,12 @@ You have some configuration options with this server, it can be configured with 
 
 In this file, you have a `last_update` field, it is entirely handled by the server. It's meant to represent the last time the database was updated, and serves to not have to re-index every single file every time we start the server again, which can be annoying if you have a lot of documents.
 
+## Build instructions
+
+It's pretty straight forward, you can either do it yourself and just run `go build -o rag-server ./cmd/server`. As an extra tip, if you're on Windows, you can add this: `-ldflags -H=windowsgui` so that the cmd doesn't appear when you launch the app.
+
+You can also use `make {your os}` to build the app for your operating system directly. you can choose between `windows`, `linux` and `macos`, the produced file will go in `dist/rag-server-{os}-{arch}(.exe)`. It will build for arm64 if you're targeting macOS.
+
 ## Dependencies
 
 This project is directly dependent on a few libraries from other projects.

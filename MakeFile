@@ -1,0 +1,29 @@
+
+# -----------------------------------------------
+# Configuration — edit these two variables
+# -----------------------------------------------
+MAIN	  := ./cmd/server# path to the main package
+OUTPUT	  := rag-server# output binary name
+# -----------------------------------------------
+
+GO		:= go
+LDFLAGS	:= -ldflags="-s -w"
+
+.PHONY:	all windows linux macos clean
+
+all: tidy windows linux macos
+
+tidy:
+	$(GO) mod tidy
+
+windows:
+	GOOS=windows GOARCH=amd64 $(GO) build $(LDFLAGS) -o dist/$(OUTPUT)-windows-amd64.exe $(MAIN)
+
+linux:
+	GOOS=linux GOARCH=amd64 $(GO) build $(LDFLAGS) -o dist/$(OUTPUT)-linux-amd64 $(MAIN)
+
+macos:
+	GOOS=darwin GOARCH=arm64 $(GO) build $(LDFLAGS) -o dist/$(OUTPUT)-darwin-arm64 $(MAIN)
+
+clean:
+	rm -rf dist/
