@@ -1,0 +1,7 @@
+{
+  "bleve_index_path":"C:\\RAG\\bleve\\",
+  "docs_path":"C:\\RAG\\docs",
+  "model":"gemma4:latest",
+  "language":"en",
+  "last_update":null
+}

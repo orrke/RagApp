@@ -1,0 +1,4 @@
+{
+  "result": "success",
+  "content": "The server_config.json file contains fields specifying the configuration for the Rag server."
+}
