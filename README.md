@@ -16,6 +16,8 @@ If you're running the server for the first time, chances are you didn't setup th
 rag-server --docs "/path/to/your/docs"
 ```
 
+You can also set the model to use with `--model "model-name:version`, if you don't set one yourself, it will default to gemma4:latest, so you'll need to have it pulled.
+
 ### Running the server
 
 In order to start the server, you can get the binary (or exe) in the releases. In order to launch the server with the base address, you can simply launch the binary. If you want to launch the server at a custom address and port, you can run the server with the following parameters:
@@ -32,6 +34,29 @@ The server will return a JSON document with 2 fields:
   - content: the result of the query operation. Either the model's findings in case of a success, or the Error message if one was encountered.
 
 Some query and response examples are included over at [examples/query.json](examples/query.json) and [examples/response.json](examples/response.json).
+
+## Troubleshooting
+
+### /search endpoint fails silently
+
+This is most likely due to you not having pulled the model. If you didn't specify any model, then go to your terminal and run this:
+```shell
+ollama pull gemma4:latest
+```
+If you did specify a model, then pull it from ollama to be able to use it.
+
+### The model doesn't find the info
+
+This can be due to several things, the most likely one being your file is not supported. Right now, the extensions that are supported are the following:
+`.txt .csv .bat .doc .docx .xlsx .pdf .odt`.
+Another reason might be that your data is simply too large. I didn't necessarily run a lot of tests myself, but I did notice that after too many tokens, the model just isn't able to find the information at all anymore. In that case, I would recommend you try another model with a larger context window. If that still does not work, then you should probably try another RAG application, or split your documents. 
+
+### The cmd pops up on Windows
+
+This is an issue when building normally in go. 
+In order to not have this terminal pop up, you can try to use the ones in the release section (which should be built correctly), or build it yourself, by adding these flags to your build command: 
+`-ldflags -H=windowsgui`. 
+This flags the app as GUI app (and not CLI) to windows, which should prevent it from spawning a cmd prompt.
 
 ## API specification
 
