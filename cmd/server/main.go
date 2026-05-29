@@ -35,15 +35,10 @@ func main() {
 	time := config.Config.LastUpdate
 	config.Lock.RUnlock()
 
-	//if the user provided an argument for the docs path, then we set it
-	if serverArgs.docsPath != nil {
-		config.Lock.Lock()
-		config.Config.DocsPath = *serverArgs.docsPath
-		config.Lock.Unlock()
-		err := config.SaveConfigToFile()
-		if err != nil {
-			log.Fatal(err)
-		}
+	//Set the variables if they're not nil
+	err = config.Config.SetArgs(serverArgs.docsPath, serverArgs.model)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	//docsPath isn't set by default, meaning the config file is the default one

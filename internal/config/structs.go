@@ -23,3 +23,19 @@ func (s ServerConfig) Default() ServerConfig {
 		LastUpdate:     nil,
 	}
 }
+
+// SetArgs sets the given cli arguments to the given config object, and saves the main Config to a file (assuming it's the main config that's getting updated)
+func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
+	Lock.Lock()
+	defer Lock.Unlock()
+
+	if docsPath != nil {
+		s.DocsPath = *docsPath
+	}
+
+	if model != nil {
+		s.Model = *model
+	}
+
+	return SaveConfigToFile()
+}
