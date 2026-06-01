@@ -4,6 +4,7 @@ import (
 	"RagApp/internal/api"
 	"RagApp/internal/config"
 	"RagApp/internal/database"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	//Gte the config directory for the OS
+	//Get the config directory for the OS
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		log.Fatal(err)
@@ -26,6 +27,7 @@ func main() {
 	//Load the configuration file into config.Config (global variable), access with the config.Lock RWLock
 	err = config.GetConfigFromFile()
 	if err != nil {
+		fmt.Println("zegzreygzegeztg")
 		log.Fatal(err)
 	}
 

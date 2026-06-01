@@ -1,12 +1,14 @@
 package ollama
 
+import "RagApp/internal/config"
+
 // CreateSystemPrompt creates the initial system prompt for the model
 func CreateSystemPrompt(language string) string {
-	return "You are an AI agent used for Research Advanced Generation.\n" +
+	return "Answer the user in the following language only: " + config.Languages[language] + "\n" +
+		"You are an AI agent used for Research Advanced Generation.\n" +
 		"You have access to tools to help you answer the user.\n" +
 		"Do not use any context coming from any other source than the main tool you have access to.\n" +
 		"You can use the \"query_database\" tool in order to search for things in the database.\n" +
-		"Answer the user in the following language only: " + language + "\n" +
 		"The user will ask a question, from that you can call the query_database tool to answer them.\n" +
 		"The tool searches in a Bleve database in go, formulate your request for that database.\n" +
 		"The files can be quite big, as such you should not take too many files at once (I would recommend not more than 5)\n" +
@@ -16,7 +18,7 @@ func CreateSystemPrompt(language string) string {
 
 // CreateUserPrompt is a function to make the initial user prompt
 func CreateUserPrompt(query string, language string) string {
-	return "Use the tools at your disposition to answer the user in the following language only: " + language + "\n" +
+	return "Use the tools at your disposition to answer the user in the following language only: " + config.Languages[language] + "\n" +
 		"User query: " + query + "\n"
 }
 

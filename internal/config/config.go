@@ -2,6 +2,8 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"os"
 	"path"
 	"time"
@@ -11,7 +13,6 @@ import (
 func GetConfigFromFile() error {
 	//Lock the config down
 	Lock.Lock()
-	defer Lock.Unlock() //Unlocks when the function is done
 
 	configPath := path.Join(Path, "server_config.json")
 
@@ -19,6 +20,7 @@ func GetConfigFromFile() error {
 		//Open the configuration file, it's plain text so we don't need an external crate
 		file, err := os.Open(configPath)
 		if err != nil {
+			fmt.Println("aaaaa")
 			return err
 		}
 		defer file.Close()
@@ -27,6 +29,7 @@ func GetConfigFromFile() error {
 		decoder := json.NewDecoder(file)
 		err = decoder.Decode(&Config)
 
+		Lock.Unlock()
 		return nil
 	}
 
@@ -34,6 +37,12 @@ func GetConfigFromFile() error {
 	defaultConfig := ServerConfig{}.Default()
 	Config = defaultConfig
 
+	lang := Config.Language
+	if _, exists := Languages[lang]; !exists {
+		return errors.New("Unsupported language: " + lang)
+	}
+
+	Lock.Unlock()
 	return SaveConfigToFile()
 }
 
@@ -43,16 +52,18 @@ func SaveConfigToFile() error {
 	Lock.RLock()
 	defer Lock.RUnlock()
 
+	configPath := path.Join(Path, "server_config.json")
+
 	//Open the file with write and create permissions
 	//0644: owner can rw, groups can r and others can r
-	file, err := os.OpenFile(Path, os.O_WRONLY|os.O_CREATE, 0644)
+	file, err := os.OpenFile(configPath, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
 	//Marshal the struct into a json
-	b, err := json.Marshal(Config)
+	b, err := json.MarshalIndent(Config, "", " ")
 	if err != nil {
 		return err
 	}

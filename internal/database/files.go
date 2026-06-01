@@ -41,9 +41,9 @@ func GetAllFilesInDir(dir string, lastUpdate *time.Time) ([]Document, error) {
 			}
 
 			//Get the content of the document as text from the extract package
-			content, err := extract.Extract(filepath.Join(dir, entry.Name()))
-			if err != nil {
-				return nil, err
+			content := extract.Extract(filepath.Join(dir, entry.Name()))
+			if content == "" { //file is empty, skip
+				continue
 			}
 
 			//Append the fetched document into the result slice

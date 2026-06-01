@@ -1,7 +1,7 @@
 package extract
 
 import (
-	"errors"
+	"log"
 	"path/filepath"
 )
 
@@ -21,16 +21,24 @@ var extractors = map[string]func(string) (string, error){
 // Universal text extractor from a bunch of supported files.
 // If the file isn't supported it will return an error.
 // The map in this file is how we get the content of the plain text file
-func Extract(filePath string) (string, error) {
+func Extract(filePath string) string {
 	extension := filepath.Ext(filePath)
 
 	if extension == "" {
-		return "", errors.New("no file extension")
+		log.Println("Extract: no extension")
+		return ""
 	}
 
 	extractor, ok := extractors[extension]
 	if !ok {
-		return "", errors.New("unsupported file extension: " + extension)
+		log.Println("Unsupported file extension:", extension)
+		return ""
 	}
-	return extractor(filePath)
+	result, err := extractor(filePath)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return result
 }

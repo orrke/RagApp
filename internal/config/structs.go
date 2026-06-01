@@ -27,7 +27,6 @@ func (s ServerConfig) Default() ServerConfig {
 // SetArgs sets the given cli arguments to the given config object, and saves the main Config to a file (assuming it's the main config that's getting updated)
 func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
 	Lock.Lock()
-	defer Lock.Unlock()
 
 	if docsPath != nil {
 		s.DocsPath = *docsPath
@@ -37,5 +36,6 @@ func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
 		s.Model = *model
 	}
 
+	Lock.Unlock()
 	return SaveConfigToFile()
 }
