@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"RagApp/internal/logging"
 	"bufio"
 	"os"
 )
@@ -10,6 +11,8 @@ import (
 // getTextFromPlainText is a function to get the contents of any plain text file
 // (which can be a txt, bat, csv... so on)
 func getTextFromPlainText(filePath string) (string, error) {
+	logging.Trace("getTextFromPlainText")
+
 	//Open the reader
 	r, err := os.Open(filePath)
 	if err != nil {
@@ -26,5 +29,6 @@ func getTextFromPlainText(filePath string) (string, error) {
 		text += scanner.Text()
 	}
 
+	logging.Trace("returning getTextFromPlainText")
 	return text, nil
 }

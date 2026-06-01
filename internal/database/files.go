@@ -3,6 +3,7 @@ package database
 import (
 	"RagApp/internal/config"
 	"RagApp/internal/extract"
+	"RagApp/internal/logging"
 	"os"
 	"path/filepath"
 	"time"
@@ -12,6 +13,8 @@ import (
 //
 // Retrieve every single file in the specified directory, depending on the last database update time
 func GetAllFilesInDir(dir string, lastUpdate *time.Time) ([]Document, error) {
+	logging.Trace("GetAllFilesInDir")
+
 	entries, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
@@ -55,6 +58,7 @@ func GetAllFilesInDir(dir string, lastUpdate *time.Time) ([]Document, error) {
 		}
 	}
 
+	logging.Trace("returning GetAllFilesInDir")
 	return result, nil
 }
 
@@ -62,7 +66,10 @@ func GetAllFilesInDir(dir string, lastUpdate *time.Time) ([]Document, error) {
 //
 // Stores all the files in the default directory inside the bleve index.
 func StoreAllFilesInDefaultDir(defaultDocsPath string, lastUpdate *time.Time) error {
+	logging.Trace("StoreAllFilesInDefaultDir")
+
 	//fetches all the files in the specified directory
+	logging.Debug("storing all default files")
 	files, err := GetAllFilesInDir(defaultDocsPath, lastUpdate)
 	if err != nil {
 		return err
@@ -80,5 +87,11 @@ func StoreAllFilesInDefaultDir(defaultDocsPath string, lastUpdate *time.Time) er
 	}
 
 	//Add all the fetched documents to the index
-	return AddAllDocumentsToIndex(Index, files)
+	err = AddAllDocumentsToIndex(Index, files)
+	if err != nil {
+		return err
+	}
+
+	logging.Trace("returning StoreAllFilesInDefaultDir")
+	return nil
 }

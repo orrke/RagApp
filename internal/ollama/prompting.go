@@ -1,6 +1,9 @@
 package ollama
 
-import "RagApp/internal/config"
+import (
+	"RagApp/internal/config"
+	"RagApp/internal/logging"
+)
 
 // CreateSystemPrompt creates the initial system prompt for the model
 func CreateSystemPrompt(language string) string {
@@ -24,6 +27,8 @@ func CreateUserPrompt(query string, language string) string {
 
 // GetInitialRequest is a function to create the initial NewChatRequest object, as well as the beginning of the message history
 func GetInitialRequest(query string, model string, language string) (NewChatRequest, []Message) {
+	logging.Trace("GetInitialRequest")
+
 	//get the system and user prompt
 	systemPrompt := CreateSystemPrompt(language)
 	userPrompt := CreateUserPrompt(query, language)
@@ -41,6 +46,7 @@ func GetInitialRequest(query string, model string, language string) (NewChatRequ
 	}
 	messageHistory := []Message{systemMessage, userMessage}
 
+	logging.Trace("returning GetInitialRequest")
 	//Create the request
 	return NewChatRequest{
 		Model:    model,

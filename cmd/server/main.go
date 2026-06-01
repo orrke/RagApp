@@ -4,7 +4,7 @@ import (
 	"RagApp/internal/api"
 	"RagApp/internal/config"
 	"RagApp/internal/database"
-	"fmt"
+	"RagApp/internal/logging"
 	"log"
 	"net/http"
 	"os"
@@ -20,6 +20,13 @@ func main() {
 
 	//Put the configuration file in the default config directory
 	config.Path = path.Join(configDir, "RagApp")
+	logging.LoggerPath = path.Join(configDir, "RagApp/logs")
+
+	//Setup the logger
+	err = logging.LogSetup()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	//Get the command line arguments for the server (address and port)
 	serverArgs := GetArgs()
@@ -27,15 +34,17 @@ func main() {
 	//Load the configuration file into config.Config (global variable), access with the config.Lock RWLock
 	err = config.GetConfigFromFile()
 	if err != nil {
-		fmt.Println("zegzreygzegeztg")
-		log.Fatal(err)
+		logging.Fatal(err.Error())
 	}
 
 	//Get some variables we'll use to init the server, from the config file we just loaded
+	logging.Debug("fetching config values")
+	logging.Trace("Locking down config")
 	config.Lock.RLock()
 	docsPath := config.Config.DocsPath
 	time := config.Config.LastUpdate
 	config.Lock.RUnlock()
+	logging.Trace("Releasing config lock")
 
 	//Set the variables if they're not nil
 	err = config.Config.SetArgs(serverArgs.docsPath, serverArgs.model)

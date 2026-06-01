@@ -1,9 +1,9 @@
 package config
 
 import (
+	"RagApp/internal/logging"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"os"
 	"path"
 	"time"
@@ -11,7 +11,10 @@ import (
 
 // GetConfigFromFile replaces the Config variable with the content of the configuration file at Path
 func GetConfigFromFile() error {
+	logging.Trace("GetConfigFromFile")
+
 	//Lock the config down
+	logging.Debug("Locking down config")
 	Lock.Lock()
 
 	configPath := path.Join(Path, "server_config.json")
@@ -20,7 +23,7 @@ func GetConfigFromFile() error {
 		//Open the configuration file, it's plain text so we don't need an external crate
 		file, err := os.Open(configPath)
 		if err != nil {
-			fmt.Println("aaaaa")
+			logging.Debug("Config file not found")
 			return err
 		}
 		defer file.Close()
@@ -30,6 +33,8 @@ func GetConfigFromFile() error {
 		err = decoder.Decode(&Config)
 
 		Lock.Unlock()
+		logging.Debug("Config released")
+		logging.Trace("returning GetConfigFromFile - file found")
 		return nil
 	}
 
@@ -39,23 +44,33 @@ func GetConfigFromFile() error {
 
 	lang := Config.Language
 	if _, exists := Languages[lang]; !exists {
+		logging.Debug("Unsupported language found!")
 		return errors.New("Unsupported language: " + lang)
 	}
 
 	Lock.Unlock()
+	logging.Debug("Config lock released")
+	logging.Trace("returning GetConfigFromFile - file not found")
 	return SaveConfigToFile()
 }
 
 // SaveConfigToFile saves the current content of the ServerConfig struct into the config file at Path
 func SaveConfigToFile() error {
+	logging.Trace("SaveConfigToFile")
+
 	//Locks the Config struct down
+	logging.Debug("Locking down config")
 	Lock.RLock()
-	defer Lock.RUnlock()
+	defer func() {
+		Lock.RUnlock()
+		logging.Debug("Releasing config")
+	}()
 
 	configPath := path.Join(Path, "server_config.json")
 
 	//Open the file with write and create permissions
 	//0644: owner can rw, groups can r and others can r
+	logging.Debug("Saving config")
 	file, err := os.OpenFile(configPath, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		return err
@@ -69,21 +84,35 @@ func SaveConfigToFile() error {
 	}
 
 	//Write the JSON into the file as plain text
+	logging.Debug("Writing config to file")
 	_, err = file.Write(b)
 	if err != nil {
 		return err
 	}
 
+	logging.Trace("returning SaveConfigToFile")
 	return nil
 }
 
 // StoreCurrentDate save the current time to the last_update field of the json config file
 func StoreCurrentDate() error {
+	logging.Trace("StoreCurrentDate")
+
+	logging.Debug("Locking down config")
 	Lock.Lock()
 	Config.LastUpdate = new(time.Now())
 	Lock.Unlock()
+	logging.Debug("Config released")
 
-	return SaveConfigToFile()
+	err := SaveConfigToFile()
+
+	if err != nil {
+		logging.Error("Unable to save config file: " + err.Error())
+		return err
+	}
+
+	logging.Trace("returning StoreCurrentDate")
+	return nil
 }
 
 // fileExists checks if a file is present at the specified path

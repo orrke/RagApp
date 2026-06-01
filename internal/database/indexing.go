@@ -2,6 +2,7 @@ package database
 
 import (
 	"RagApp/internal/config"
+	"RagApp/internal/logging"
 	"encoding/json"
 
 	"github.com/blevesearch/bleve/v2"
@@ -40,11 +41,15 @@ func (d Document) Type() string {
 // It also creates a mapping for the path, searching by keyword
 // It creates a mapping for the raw field, but it doesn't use it to searchfor keywords
 func createIndex(bleveIndexPath string) (bleve.Index, error) {
+	logging.Trace("createIndex")
+
+	logging.Debug("Locking down config")
 	config.Lock.RLock()
 	language := config.Config.Language
 	config.Lock.RUnlock()
+	logging.Debug("Releasing config lock")
 
-	//create the idnex mapping and the documents mapping
+	//create the index mapping and the documents mapping
 	indexMapping := bleve.NewIndexMapping()
 	docMapping := bleve.NewDocumentMapping()
 
@@ -75,20 +80,27 @@ func createIndex(bleveIndexPath string) (bleve.Index, error) {
 		return nil, err
 	}
 
+	logging.Trace("returning createIndex")
 	return bleveIndex, nil
 }
 
 // getIndex fetches an existing index at the specified path
 func getIndex(bleveIndexPath string) (bleve.Index, error) {
+	logging.Trace("getIndex")
+
 	index, err := bleve.Open(bleveIndexPath + "index.bleve")
 	if err != nil {
 		return nil, err
 	}
+
+	logging.Trace("returning getIndex")
 	return index, nil
 }
 
 // GetOrCreateIndex is a unified wrapper around the createIndex and getIndex functions
 func GetOrCreateIndex(bleveIndexPath string) (bleve.Index, error) {
+	logging.Trace("GetOrCreateIndex")
+
 	index, err := getIndex(bleveIndexPath)
 	if err != nil {
 		index, err = createIndex(bleveIndexPath)
@@ -97,11 +109,14 @@ func GetOrCreateIndex(bleveIndexPath string) (bleve.Index, error) {
 		}
 	}
 
+	logging.Trace("returning GetOrCreateIndex")
 	return index, nil
 }
 
 // addDocumentToIndex adds a single document to the given index
 func addDocumentToIndex(index bleve.Index, document Document) error {
+	logging.Trace("addDocumentToIndex")
+
 	//marshal the original doc into the raw json format
 	rawDoc, err := json.Marshal(document)
 	if err != nil {
@@ -112,16 +127,28 @@ func addDocumentToIndex(index bleve.Index, document Document) error {
 
 	//store the document into the index
 	//the primary key is the path, since we only store a single file once
-	return index.Index(document.Path, doc)
+	logging.Debug("locking down index")
+	IndexLock.Lock()
+	err = index.Index(document.Path, doc)
+	IndexLock.Unlock()
+	logging.Debug("Releasing index lock")
+	if err != nil {
+		return err
+	}
+
+	logging.Trace("returning addDocumentToIndex")
+	return nil
 }
 
 // AddAllDocumentsToIndex adds all the documents in the given array into the specified index
 func AddAllDocumentsToIndex(index bleve.Index, documents []Document) error {
+	logging.Trace("AddAllDocumentsToIndex")
 	for _, document := range documents {
 		err := addDocumentToIndex(index, document)
 		if err != nil {
 			return err
 		}
 	}
+	logging.Trace("returning AddAllDocumentsToIndex")
 	return nil
 }

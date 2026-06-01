@@ -3,6 +3,7 @@ package api
 import (
 	"RagApp/internal/config"
 	"RagApp/internal/database"
+	"RagApp/internal/logging"
 	"RagApp/internal/ollama"
 	"encoding/json"
 	"fmt"
@@ -11,6 +12,7 @@ import (
 
 // ServerIsAlive is the root (/) handler, returns OK to confirm that the server is indeed alive.
 func ServerIsAlive(w http.ResponseWriter, _ *http.Request) {
+	logging.Info("Received IsAlive request")
 	_, err := fmt.Fprintf(w, "OK")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -19,7 +21,10 @@ func ServerIsAlive(w http.ResponseWriter, _ *http.Request) {
 
 // SearchDocument is the handler for the /search endpoint, the main endpoint of the server.
 func SearchDocument(w http.ResponseWriter, r *http.Request) {
+	logging.Info("Received SearchDocument request")
+
 	if r.Method != http.MethodPost { //Only allow POST
+		logging.Info("Invalid request method: " + r.Method)
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -29,19 +34,24 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 	var data SearchParameters
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
+		logging.Info("Error decoding search parameters: " + err.Error())
 		http.Error(w, "Bad request: "+err.Error(), http.StatusBadRequest)
 	}
 	defer r.Body.Close()
 
 	//Get some useful variables from the config file
+	logging.Debug("Locking down config")
 	config.Lock.RLock()
 	model := config.Config.Model
 	language := config.Config.Language
 	config.Lock.RUnlock()
+	logging.Debug("Releasing config Lock")
 
 	//Query the model for the necessary documents
 	res, err := ollama.AskModel(data.Query, database.Index, model, language)
 	if err != nil {
+		logging.Info("Error asking model: " + err.Error())
+
 		//Formulate the failure response
 		response := SearchResponse{
 			Result:  "failure",
@@ -54,6 +64,7 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 	}
+	logging.Trace("Successfully asked model")
 
 	//Formulate the success response
 	response := SearchResponse{
@@ -65,12 +76,15 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
+		logging.Info("Error encoding search response: " + err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
 // ResetIndex is the handler for the /reset endpoint
 func ResetIndex(w http.ResponseWriter, _ *http.Request) {
+	logging.Info("Received ResetIndex request")
+
 	//Reset the entire index
 	err := database.ResetIndex()
 	if err != nil {
@@ -80,6 +94,8 @@ func ResetIndex(w http.ResponseWriter, _ *http.Request) {
 
 // ReloadConfig is the handler for the /reconfig endpoint
 func ReloadConfig(w http.ResponseWriter, _ *http.Request) {
+	logging.Info("Received ReloadConfig request")
+
 	//Reload the configuration from the json file
 	err := config.GetConfigFromFile()
 	if err != nil {

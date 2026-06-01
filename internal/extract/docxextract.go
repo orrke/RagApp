@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"RagApp/internal/logging"
 	"os"
 
 	"github.com/fumiama/go-docx"
@@ -8,6 +9,8 @@ import (
 
 // getTextFromDocx fetches the content of a docx or similar file.
 func getTextFromDocx(filePath string) (string, error) {
+	logging.Trace("getTextFromDocx")
+
 	//Open the file
 	r, err := os.Open(filePath)
 	if err != nil {
@@ -41,5 +44,6 @@ func getTextFromDocx(filePath string) (string, error) {
 		}
 	}
 
+	logging.Trace("returning getTextFromDocx")
 	return text, nil
 }

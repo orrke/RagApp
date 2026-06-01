@@ -1,6 +1,7 @@
 package database
 
 import (
+	"RagApp/internal/logging"
 	"encoding/json"
 
 	"github.com/blevesearch/bleve/v2"
@@ -9,12 +10,17 @@ import (
 // SearchDatabase searches for documents with the given query through the specified index
 // It returns documents sorted by their score in descending order
 func SearchDatabase(query string, index bleve.Index) ([]Document, error) {
+	logging.Trace("SearchDatabase")
 	bleveQuery := bleve.NewMatchQuery(query)
 	searchRequest := bleve.NewSearchRequest(bleveQuery)
 	searchRequest.SortBy([]string{"-_score"}) //Sort by score descending
 	searchRequest.Fields = []string{"Raw"}    //Only fetch the 'Raw' field
 
+	logging.Debug("Locking down index lock")
+	IndexLock.RLock()
 	searchResults, err := index.Search(searchRequest) //search through the database
+	IndexLock.RUnlock()
+	logging.Trace("Releasing index lock")
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +41,7 @@ func SearchDatabase(query string, index bleve.Index) ([]Document, error) {
 		results = append(results, document)
 	}
 
+	logging.Trace("returning SearchDatabase")
 	return results, nil
 }
 

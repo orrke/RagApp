@@ -2,6 +2,7 @@ package ollama
 
 import (
 	"RagApp/internal/database"
+	"RagApp/internal/logging"
 	"errors"
 	"strconv"
 	"strings"
@@ -11,6 +12,8 @@ import (
 
 // handleToolCall is a function to handle a model's tool call and call the correct function
 func handleToolCall(response ChatResponse, history *[]Message, index bleve.Index) (*NewChatRequest, error) {
+	logging.Trace("handleToolCall")
+
 	if len(response.Message.ToolCalls) < 1 {
 		return nil, errors.New("no tool calls found")
 	}
@@ -78,6 +81,7 @@ func handleToolCall(response ChatResponse, history *[]Message, index bleve.Index
 		}
 	}
 
+	logging.Trace("returning handleToolCall")
 	//formulate the request
 	return &NewChatRequest{
 		Model:    response.Model,

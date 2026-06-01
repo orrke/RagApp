@@ -1,11 +1,15 @@
 package extract
 
 import (
+	"RagApp/internal/logging"
+
 	"sbinet.org/x/odf"
 )
 
 // getTextFromOdt is a function to retrieve the contents of an odt file
 func getTextFromOdt(filePath string) (string, error) {
+	logging.Trace("getTextFromOdt")
+
 	//open the file directly with the odf library
 	doc, err := odf.Open(filePath)
 
@@ -33,5 +37,6 @@ func getTextFromOdt(filePath string) (string, error) {
 		return "", err
 	}
 
+	logging.Trace("returning getTextFromOdt")
 	return text, nil
 }

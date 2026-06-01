@@ -2,6 +2,7 @@ package database
 
 import (
 	"RagApp/internal/config"
+	"RagApp/internal/logging"
 	"os"
 	"path"
 	"sync"
@@ -16,9 +17,12 @@ var (
 
 // SetIndex sets the Index global variable to the index specified in the config file
 func SetIndex() error {
+	logging.Trace("SetIndex")
+	logging.Debug("Locking down config")
 	config.Lock.RLock()
 	bleveIndexPath := config.Config.BleveIndexPath
 	config.Lock.RUnlock()
+	logging.Debug("Releasing index lock")
 
 	//get the index from the default path
 	index, err := GetOrCreateIndex(bleveIndexPath)
@@ -27,16 +31,26 @@ func SetIndex() error {
 	}
 
 	//Set the index global variable
+	logging.Debug("Locking down index")
 	IndexLock.Lock()
-	defer IndexLock.Unlock()
+	defer func() {
+		IndexLock.Unlock()
+		logging.Debug("Releasing index lock")
+	}()
 	Index = index
 
+	logging.Trace("returning SetIndex")
 	return nil
 }
 
 func ResetIndex() error {
+	logging.Trace("ResetIndex")
+	logging.Debug("Locking down config")
 	IndexLock.Lock()
-	defer IndexLock.Unlock()
+	defer func() {
+		IndexLock.Unlock()
+		logging.Debug("Releasing index lock")
+	}()
 
 	//Fetch some useful config variables
 	config.Lock.RLock()
@@ -67,5 +81,6 @@ func ResetIndex() error {
 		return err
 	}
 
+	logging.Trace("returning ResetIndex")
 	return nil
 }

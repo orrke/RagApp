@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"RagApp/internal/logging"
 	"log"
 	"path/filepath"
 )
@@ -22,6 +23,8 @@ var extractors = map[string]func(string) (string, error){
 // If the file isn't supported it will return an error.
 // The map in this file is how we get the content of the plain text file
 func Extract(filePath string) string {
+	logging.Trace("Extract")
+
 	extension := filepath.Ext(filePath)
 
 	if extension == "" {
@@ -40,5 +43,6 @@ func Extract(filePath string) string {
 		log.Println(err)
 	}
 
+	logging.Trace("returning Extract")
 	return result
 }

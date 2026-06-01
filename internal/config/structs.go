@@ -1,6 +1,7 @@
 package config
 
 import (
+	"RagApp/internal/logging"
 	"time"
 )
 
@@ -15,6 +16,8 @@ type ServerConfig struct {
 }
 
 func (s ServerConfig) Default() ServerConfig {
+	logging.Trace("Defaulting server config")
+
 	return ServerConfig{
 		BleveIndexPath: Path, //gets index.bleve added to it, which contains the actual data
 		DocsPath:       "",   //TODO: put that into a variable at server start
@@ -26,6 +29,9 @@ func (s ServerConfig) Default() ServerConfig {
 
 // SetArgs sets the given cli arguments to the given config object, and saves the main Config to a file (assuming it's the main config that's getting updated)
 func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
+	logging.Trace("Setting arguments")
+
+	logging.Debug("Locking down config")
 	Lock.Lock()
 
 	if docsPath != nil {
@@ -37,5 +43,13 @@ func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
 	}
 
 	Lock.Unlock()
-	return SaveConfigToFile()
+	logging.Debug("Releasing config lock")
+
+	err := SaveConfigToFile()
+	if err != nil {
+		return err
+	}
+
+	logging.Trace("returning SaveConfigToFile")
+	return nil
 }

@@ -1,11 +1,15 @@
 package ollama
 
 import (
+	"RagApp/internal/logging"
+
 	"github.com/blevesearch/bleve/v2"
 )
 
 // AskModel is a function to query a model through ollama to get information from the bleve index
 func AskModel(query string, index bleve.Index, model string, language string) (string, error) {
+	logging.Trace("AskModel")
+
 	//variables for iteration and result
 	queryingModel := true
 	var modelAnswer string
@@ -41,5 +45,6 @@ func AskModel(query string, index bleve.Index, model string, language string) (s
 		}
 	}
 
+	logging.Trace("returning AskModel")
 	return modelAnswer, nil
 }

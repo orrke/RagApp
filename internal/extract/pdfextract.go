@@ -1,6 +1,7 @@
 package extract
 
 import (
+	"RagApp/internal/logging"
 	"os"
 
 	"github.com/ledongthuc/pdf"
@@ -8,6 +9,8 @@ import (
 
 // getTextFromPdf is a function to extract text from a pdf file
 func getTextFromPdf(filePath string) (string, error) {
+	logging.Trace("getTextFromPdf")
+
 	//open the file
 	r, err := os.Open(filePath)
 	if err != nil {
@@ -46,5 +49,6 @@ func getTextFromPdf(filePath string) (string, error) {
 		text += b
 	}
 
+	logging.Trace("returning getTextFromPdf")
 	return text, nil
 }
