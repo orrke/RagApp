@@ -64,6 +64,7 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
+		return
 	}
 	logging.Trace("Successfully asked model")
 

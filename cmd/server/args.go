@@ -1,6 +1,7 @@
 package main
 
 import (
+	"RagApp/internal/logging"
 	"flag"
 )
 
@@ -19,9 +20,21 @@ func GetArgs() Args {
 	port := flag.String("port", "5051", "Server port")
 	docsPath := flag.String("docs", "", "Documents path")
 	model := flag.String("model", "", "Documents model path")
+	var debugLevel bool
+	var traceLevel bool
+
+	flag.BoolVar(&debugLevel, "debug", false, "Debug level")
+	flag.BoolVar(&traceLevel, "trace", false, "Trace level")
 
 	//parse the flags given to the program
 	flag.Parse()
+
+	if debugLevel {
+		logging.LogLevel = logging.LogLevelMap["debug"]
+	}
+	if traceLevel {
+		logging.LogLevel = logging.LogLevelMap["trace"]
+	}
 
 	//convert the pointer to nil if the path is empty
 	if *docsPath == "" {

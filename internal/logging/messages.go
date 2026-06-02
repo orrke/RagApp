@@ -11,6 +11,7 @@ var LogLevelMap = map[string]int{
 var LogLevel = LogLevelMap["info"]
 
 func Fatal(msg string) {
+	Logger.Println("Fatal: " + msg)
 	Logger.Fatal(msg)
 }
 

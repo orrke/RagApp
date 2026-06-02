@@ -50,6 +50,6 @@ func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
 		return err
 	}
 
-	logging.Trace("returning SaveConfigToFile")
+	logging.Trace("returning SetArgs")
 	return nil
 }
