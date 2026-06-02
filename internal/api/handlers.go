@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // ServerIsAlive is the root (/) handler, returns OK to confirm that the server is indeed alive.
@@ -77,6 +78,86 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		logging.Info("Error encoding search response: " + err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func SearchRawDocument(w http.ResponseWriter, r *http.Request) {
+	logging.Info("Received SearchRawDocument request")
+
+	if r.Method != http.MethodPost {
+		logging.Info("Invalid request method: " + r.Method)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var data SearchParameters
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		logging.Info("Error decoding search parameters: " + err.Error())
+		http.Error(w, "Bad request: "+err.Error(), http.StatusBadRequest)
+	}
+	defer r.Body.Close()
+
+	res, err := database.SearchDatabase(data.Query, database.Index)
+	if err != nil {
+		logging.Info("Error searching database: " + err.Error())
+
+		response := SearchResponse{
+			Result:  "failure",
+			Content: "Failed to search database: " + err.Error(),
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	if len(res) == 0 {
+		response := SearchResponse{
+			Result:  "failure",
+			Content: "No results found",
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		err = json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	var finalRes []string
+	for _, doc := range res {
+		finalRes = append(finalRes, doc.String())
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := SearchResponse{
+		Result:  "success",
+		Content: strings.Join(finalRes, ","),
+	}
+
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func UpdateIndex(w http.ResponseWriter, r *http.Request) {
+	logging.Info("Received UpdateIndex request")
+
+	config.Lock.RLock()
+	docsPath := config.Config.DocsPath
+	lastUpdate := config.Config.LastUpdate
+	config.Lock.RUnlock()
+
+	err := database.StoreAllFilesInDefaultDir(docsPath, lastUpdate)
+	if err != nil {
+		logging.Info("Error updating index: " + err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

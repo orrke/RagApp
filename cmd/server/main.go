@@ -20,13 +20,14 @@ func main() {
 
 	//Put the configuration file in the default config directory
 	config.Path = path.Join(configDir, "RagApp")
-	logging.LoggerPath = path.Join(configDir, "RagApp/logs")
+	logging.LoggerPath = path.Join(config.Path, "logs")
 
-	//Setup the logger
-	err = logging.LogSetup()
+	//Set up the logger
+	file, err := logging.LogSetup()
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer file.Close()
 
 	//Get the command line arguments for the server (address and port)
 	serverArgs := GetArgs()
@@ -38,13 +39,12 @@ func main() {
 	}
 
 	//Get some variables we'll use to init the server, from the config file we just loaded
-	logging.Debug("fetching config values")
-	logging.Trace("Locking down config")
+	logging.Debug("Locking down config")
 	config.Lock.RLock()
 	docsPath := config.Config.DocsPath
 	time := config.Config.LastUpdate
 	config.Lock.RUnlock()
-	logging.Trace("Releasing config lock")
+	logging.Debug("Releasing config lock")
 
 	//Set the variables if they're not nil
 	err = config.Config.SetArgs(serverArgs.docsPath, serverArgs.model)
@@ -70,10 +70,7 @@ func main() {
 	}
 
 	//Setup server handler routes
-	http.HandleFunc("/", api.ServerIsAlive)        //GET
-	http.HandleFunc("/search", api.SearchDocument) //POST
-	http.HandleFunc("/reset", api.ResetIndex)      //GET
-	http.HandleFunc("/reconfig", api.ReloadConfig) //GET
+	api.SetupRoutes("/api/v1")
 
 	//Start server
 	err = http.ListenAndServe(serverArgs.address+":"+serverArgs.port, nil)

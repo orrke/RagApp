@@ -4,6 +4,7 @@ import (
 	"RagApp/internal/config"
 	"RagApp/internal/logging"
 	"encoding/json"
+	"path"
 
 	"github.com/blevesearch/bleve/v2"
 	_ "github.com/blevesearch/bleve/v2/analysis/lang/fr"
@@ -75,7 +76,7 @@ func createIndex(bleveIndexPath string) (bleve.Index, error) {
 	indexMapping.AddDocumentMapping("myDoc", docMapping)
 
 	//return the index
-	bleveIndex, err := bleve.New(bleveIndexPath+"index.bleve", indexMapping)
+	bleveIndex, err := bleve.New(path.Join(bleveIndexPath, "index.bleve"), indexMapping)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +89,7 @@ func createIndex(bleveIndexPath string) (bleve.Index, error) {
 func getIndex(bleveIndexPath string) (bleve.Index, error) {
 	logging.Trace("getIndex")
 
-	index, err := bleve.Open(bleveIndexPath + "index.bleve")
+	index, err := bleve.Open(path.Join(bleveIndexPath, "/index.bleve"))
 	if err != nil {
 		return nil, err
 	}

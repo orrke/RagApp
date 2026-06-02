@@ -10,22 +10,20 @@ import (
 var Logger *log.Logger
 var LoggerPath string
 
-func LogSetup() error {
+func LogSetup() (*os.File, error) {
 	filePath := getLogFileName()
 
-	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer file.Close()
 
 	Logger = log.New(file, "", log.LstdFlags|log.Lshortfile)
-	return nil
+	return file, nil
 }
 
 func getLogFileName() string {
 	currentTime := time.Now()
 
-	path.Join(LoggerPath, currentTime.Format(time.RFC3339)+".log")
-	return "" + currentTime.Format(time.UnixDate) + ".log"
+	return path.Join(LoggerPath, currentTime.Format("20060102T150405Z")+".log")
 }

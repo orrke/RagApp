@@ -28,13 +28,13 @@ func Extract(filePath string) string {
 	extension := filepath.Ext(filePath)
 
 	if extension == "" {
-		log.Println("Extract: no extension")
+		logging.Warn("File does not have any extension")
 		return ""
 	}
 
 	extractor, ok := extractors[extension]
 	if !ok {
-		log.Println("Unsupported file extension:", extension)
+		logging.Warn("Unsupported file extension: " + extension)
 		return ""
 	}
 	result, err := extractor(filePath)

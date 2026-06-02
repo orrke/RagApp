@@ -41,6 +41,16 @@ func handleToolCall(response ChatResponse, history *[]Message, index bleve.Index
 					return nil, err
 				}
 
+				if len(results) < 1 {
+					message := Message{
+						Role:    "tool",
+						Content: "No match found in Bleve index.",
+					}
+
+					*history = append(*history, message)
+					continue
+				}
+
 				//set the default values for endIndex and startIndex
 				switch v := startIndex.(type) {
 				case nil:
@@ -50,6 +60,8 @@ func handleToolCall(response ChatResponse, history *[]Message, index bleve.Index
 				default:
 					start = int(v.(float64))
 				}
+
+				start = max(start, 0)
 
 				switch v := endIndex.(type) {
 				case nil:

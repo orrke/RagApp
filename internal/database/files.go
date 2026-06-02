@@ -6,6 +6,7 @@ import (
 	"RagApp/internal/logging"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 )
 
@@ -72,13 +73,16 @@ func StoreAllFilesInDefaultDir(defaultDocsPath string, lastUpdate *time.Time) er
 	logging.Debug("storing all default files")
 	files, err := GetAllFilesInDir(defaultDocsPath, lastUpdate)
 	if err != nil {
+		logging.Error("Error getting all default files: " + err.Error())
 		return err
 	}
 
 	if len(files) == 0 {
 		//No files to be updated, just return, don't even need to update the last_update time
+		logging.Warn("no default files found")
 		return nil
 	}
+	logging.Debug("Files found: " + strconv.Itoa(len(files)))
 
 	//Update the update time to right now
 	err = config.StoreCurrentDate()
