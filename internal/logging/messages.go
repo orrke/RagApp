@@ -8,7 +8,7 @@ var LogLevelMap = map[string]int{
 	"error": 4,
 	"fatal": 5,
 }
-var LogLevel = LogLevelMap["trace"]
+var LogLevel = LogLevelMap["info"]
 
 func Fatal(msg string) {
 	Logger.Fatal(msg)

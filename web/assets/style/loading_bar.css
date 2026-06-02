@@ -1,0 +1,17 @@
+.separator {
+    background-color: #707070;
+    width: 95%;
+    height: 5px;
+    border-radius: 10px;
+    justify-self: center;
+}
+
+.separator.animate {
+    width: 100%;
+    animation: loading 1.5s infinite ease-in-out;
+}
+
+@keyframes loading {
+    0% { transform: translateX(-100%) }
+    100% { transform: translateX(100%) }
+}

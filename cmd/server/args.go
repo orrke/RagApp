@@ -15,7 +15,7 @@ type Args struct {
 // GetArgs fetches the arguments for the Args struct so the server can be put at the right address and port, and process the documents at the right
 func GetArgs() Args {
 	//setup the different flags the program supports
-	address := flag.String("address", "192.168.69.72", "Server address")
+	address := flag.String("address", "0.0.0.0", "Server address")
 	port := flag.String("port", "5051", "Server port")
 	docsPath := flag.String("docs", "", "Documents path")
 	model := flag.String("model", "", "Documents model path")
