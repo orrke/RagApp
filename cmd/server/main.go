@@ -5,6 +5,7 @@ import (
 	"RagApp/internal/config"
 	"RagApp/internal/database"
 	"RagApp/internal/logging"
+	"RagApp/web"
 	"log"
 	"net/http"
 	"os"
@@ -70,6 +71,7 @@ func main() {
 	}
 
 	//Setup server handler routes
+	web.SetupRoutes()
 	api.SetupRoutes("/api/v1")
 
 	//Start server

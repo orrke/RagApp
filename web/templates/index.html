@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- library for parsing the model's markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<form id="requestForm">
+    <div class="form-content">
+        <label for="query">Question: </label>
+        <input type="text" name="query" id="query" required>
+        <input type="submit" value="Rechercher" id="submit-button">
+    </div>
+</form>
+
+<div class="answer-block">
+    <div id="bot-answer"><span >{{ .Answer}}</span></div>
+    <span id="request-error"></span>
+</div>
+
+<script>
+    document.getElementById("requestForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData)
+        console.log(JSON.stringify(data));
+        const response = await fetch("/api/v1/search", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+
+        let result = await response.json();
+
+        if (result["result"] === "success") {
+            replaceAnswerBlockText(result["content"]);
+        } else {
+            replaceErrorBlockText(result["content"]);
+        }
+    });
+
+    function replaceAnswerBlockText(new_text) {
+        document.getElementById("bot-answer").innerHTML = marked.parse(new_text);
+    }
+
+    function replaceErrorBlockText(new_text) {
+        document.getElementById("request-error").innerHTML = new_text;
+    }
+</script>
+
+</body>
+</html>
