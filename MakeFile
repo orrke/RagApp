@@ -17,13 +17,13 @@ all: tidy windows linux macos
 tidy:
 	$(GO) mod tidy
 
-windows:
+windows: tidy
 	GOOS=windows GOARCH=amd64 $(GO) build $(LDFLAGS) $(WINFLAGS) -o dist/$(OUTPUT)-windows-amd64.exe $(MAIN)
 
-linux:
+linux: tidy
 	GOOS=linux GOARCH=amd64 $(GO) build $(LDFLAGS) -o dist/$(OUTPUT)-linux-amd64 $(MAIN)
 
-macos:
+macos: tidy
 	GOOS=darwin GOARCH=arm64 $(GO) build $(LDFLAGS) -o dist/$(OUTPUT)-darwin-arm64 $(MAIN)
 
 clean:
