@@ -39,10 +39,14 @@ func GetArgs() Args {
 	//convert the pointer to nil if the path is empty
 	if *docsPath == "" {
 		docsPath = nil
+	} else {
+		logging.Debug("Found user set docs path: " + *docsPath)
 	}
 
 	if *model == "" {
 		model = nil
+	} else {
+		logging.Debug("Found user set model: " + *model)
 	}
 
 	return Args{

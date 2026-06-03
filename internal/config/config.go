@@ -24,6 +24,7 @@ func GetConfigFromFile() error {
 		file, err := os.Open(configPath)
 		if err != nil {
 			logging.Debug("Config file not found")
+			logging.Trace("Returning GetConfigFromFile")
 			return err
 		}
 		defer file.Close()
@@ -34,7 +35,8 @@ func GetConfigFromFile() error {
 
 		Lock.Unlock()
 		logging.Debug("Config released")
-		logging.Trace("returning GetConfigFromFile - file found")
+		logging.Debug("File found")
+		logging.Trace("returning GetConfigFromFile")
 		return nil
 	}
 
@@ -50,7 +52,8 @@ func GetConfigFromFile() error {
 
 	Lock.Unlock()
 	logging.Debug("Config lock released")
-	logging.Trace("returning GetConfigFromFile - file not found")
+	logging.Debug("File not found")
+	logging.Trace("returning GetConfigFromFile")
 	return SaveConfigToFile()
 }
 
@@ -73,6 +76,7 @@ func SaveConfigToFile() error {
 	logging.Debug("Saving config")
 	file, err := os.OpenFile(configPath, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
+		logging.Trace("returning SaveConfigToFile")
 		return err
 	}
 	defer file.Close()
@@ -80,6 +84,7 @@ func SaveConfigToFile() error {
 	//Marshal the struct into a json
 	b, err := json.MarshalIndent(Config, "", " ")
 	if err != nil {
+		logging.Trace("returning SaveConfigToFile")
 		return err
 	}
 
@@ -87,6 +92,7 @@ func SaveConfigToFile() error {
 	logging.Debug("Writing config to file")
 	_, err = file.Write(b)
 	if err != nil {
+		logging.Trace("returning SaveConfigToFile")
 		return err
 	}
 
@@ -108,6 +114,7 @@ func StoreCurrentDate() error {
 
 	if err != nil {
 		logging.Error("Unable to save config file: " + err.Error())
+		logging.Trace("returning StoreCurrentDate")
 		return err
 	}
 

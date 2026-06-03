@@ -1,6 +1,7 @@
 window.onload = () => {
     setLocale();
 
+    //Intercepts the submit request and does my own post request, doesn't even need a reload.
     document.getElementById("requestForm").addEventListener("submit", async (e) => {
         //set the loading state
         setLoadingstate(true);

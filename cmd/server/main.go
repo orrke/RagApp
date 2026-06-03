@@ -23,6 +23,11 @@ func main() {
 	config.Path = path.Join(configDir, "RagApp")
 	logging.LoggerPath = path.Join(config.Path, "logs")
 
+	err = config.SetupFolders(config.Path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	//Set up the logger
 	file, err := logging.LogSetup()
 	if err != nil {

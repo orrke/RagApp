@@ -2,6 +2,7 @@ package api
 
 import "net/http"
 
+// SetupRoutes is the function to set up the API routes
 func SetupRoutes(apiPrefix string) {
 	http.HandleFunc(apiPrefix+"/search", SearchDocument)
 	http.HandleFunc(apiPrefix+"/search/raw", SearchRawDocument)

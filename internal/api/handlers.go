@@ -83,6 +83,7 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// SearchRawDocument is the handler for getting documents without any model processing.
 func SearchRawDocument(w http.ResponseWriter, r *http.Request) {
 	logging.Info("Received SearchRawDocument request")
 
@@ -148,6 +149,7 @@ func SearchRawDocument(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// UpdateIndex is the handler responsible for updating the index with no reset happening.
 func UpdateIndex(w http.ResponseWriter, r *http.Request) {
 	logging.Info("Received UpdateIndex request")
 

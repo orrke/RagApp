@@ -10,6 +10,7 @@ import (
 var Logger *log.Logger
 var LoggerPath string
 
+// LogSetup is the function responsible for setting up the logging system of the server.
 func LogSetup() (*os.File, error) {
 	filePath := getLogFileName()
 
@@ -19,9 +20,10 @@ func LogSetup() (*os.File, error) {
 	}
 
 	Logger = log.New(file, "", log.LstdFlags|log.Lshortfile)
-	return file, nil
+	return file, nil //return the file so that it can be closed at the end of main.
 }
 
+// getLogFileName is the function to get the filename (depends on the time)
 func getLogFileName() string {
 	currentTime := time.Now()
 

@@ -43,6 +43,7 @@ func SetIndex() error {
 	return nil
 }
 
+// ResetIndex is the function responsible for deleting and recreating the Bleve index.
 func ResetIndex() error {
 	logging.Trace("ResetIndex")
 	logging.Debug("Locking down config")
@@ -51,6 +52,11 @@ func ResetIndex() error {
 		IndexLock.Unlock()
 		logging.Debug("Releasing index lock")
 	}()
+
+	err := Index.Close()
+	if err != nil {
+		return err
+	}
 
 	//Fetch some useful config variables
 	config.Lock.RLock()
@@ -61,7 +67,7 @@ func ResetIndex() error {
 
 	//Flush the entire bleve index
 	fullPath := path.Join(bleveIndexPath, "index.bleve")
-	err := os.RemoveAll(fullPath)
+	err = os.RemoveAll(fullPath)
 	if err != nil {
 		return err
 	}

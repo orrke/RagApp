@@ -1,6 +1,10 @@
 body {
     padding: 0;
     margin: 0;
+
+    /* needed for firefox to display justify-self correctly, for some reason just 'grid' doesn't work. */
+    display: inline-grid;
+    width: 100%;
 }
 
 #requestForm {

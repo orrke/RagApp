@@ -20,7 +20,7 @@ func (s ServerConfig) Default() ServerConfig {
 
 	return ServerConfig{
 		BleveIndexPath: Path, //gets index.bleve added to it, which contains the actual data
-		DocsPath:       "",   //TODO: put that into a variable at server start
+		DocsPath:       "",
 		Model:          "gemma4:latest",
 		Language:       "en",
 		LastUpdate:     nil,
@@ -29,12 +29,13 @@ func (s ServerConfig) Default() ServerConfig {
 
 // SetArgs sets the given cli arguments to the given config object, and saves the main Config to a file (assuming it's the main config that's getting updated)
 func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
-	logging.Trace("Setting arguments")
+	logging.Trace("ServerConfig.SetArgs")
 
 	logging.Debug("Locking down config")
 	Lock.Lock()
 
 	if docsPath != nil {
+		logging.Debug("Found docs path")
 		s.DocsPath = *docsPath
 	}
 
@@ -42,11 +43,14 @@ func (s ServerConfig) SetArgs(docsPath *string, model *string) error {
 		s.Model = *model
 	}
 
+	Config = s
+
 	Lock.Unlock()
 	logging.Debug("Releasing config lock")
 
 	err := SaveConfigToFile()
 	if err != nil {
+		logging.Trace("returning SetArgs")
 		return err
 	}
 
