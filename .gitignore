@@ -10,6 +10,9 @@
 # Build file
 dist/
 
+# Release zip
+*.zip
+
 # Test binary, built with `go test -c`
 *.test
 
