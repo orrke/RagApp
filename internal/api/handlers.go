@@ -6,19 +6,9 @@ import (
 	"RagApp/internal/logging"
 	"RagApp/internal/ollama"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 )
-
-// ServerIsAlive is the root (/) handler, returns OK to confirm that the server is indeed alive.
-func ServerIsAlive(w http.ResponseWriter, _ *http.Request) {
-	logging.Info("Received IsAlive request")
-	_, err := fmt.Fprintf(w, "OK")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
 
 // SearchDocument is the handler for the /search endpoint, the main endpoint of the server.
 func SearchDocument(w http.ResponseWriter, r *http.Request) {
@@ -75,6 +65,7 @@ func SearchDocument(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Make the header to return to the user
+	logging.Info("Returning search response.")
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
@@ -137,6 +128,7 @@ func SearchRawDocument(w http.ResponseWriter, r *http.Request) {
 		finalRes = append(finalRes, doc.String())
 	}
 
+	logging.Info("Returning database response.")
 	w.Header().Set("Content-Type", "application/json")
 	response := SearchResponse{
 		Result:  "success",
@@ -163,6 +155,7 @@ func UpdateIndex(w http.ResponseWriter, r *http.Request) {
 		logging.Info("Error updating index: " + err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	logging.Info("Successfully updated index")
 }
 
 // ResetIndex is the handler for the /reset endpoint
@@ -174,6 +167,7 @@ func ResetIndex(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	logging.Info("Successfully reset index")
 }
 
 // ReloadConfig is the handler for the /reconfig endpoint
@@ -185,4 +179,5 @@ func ReloadConfig(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	logging.Info("Successfully reloaded config")
 }

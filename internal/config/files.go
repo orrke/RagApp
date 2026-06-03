@@ -9,13 +9,13 @@ import (
 // It can't use logging since it's set up before the logger itself.
 func SetupFolders(root string) error {
 	//Create the root folder
-	err := os.Mkdir(root, os.ModePerm)
+	err := os.MkdirAll(root, os.ModePerm)
 	if err != nil {
 		return err
 	}
 
 	//Create the logs folder
-	err = os.Mkdir(filepath.Join(root, "logs"), os.ModePerm)
+	err = os.MkdirAll(filepath.Join(root, "logs"), os.ModePerm)
 	if err != nil {
 		return err
 	}
