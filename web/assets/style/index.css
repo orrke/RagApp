@@ -34,6 +34,11 @@ body {
     width: 100px;
 }
 
+#submit-button:hover {
+    cursor: pointer;
+    background: #C1C1C1;
+}
+
 .answer-block {
     display: flex;
     margin: 10px;
@@ -55,4 +60,9 @@ body {
     border-radius: 15px;
     height: 30px;
     margin-right: 10px;
+}
+
+.settings-buttons > button:hover {
+    cursor: pointer;
+    background: #C1C1C1;
 }
