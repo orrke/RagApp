@@ -37,6 +37,39 @@ window.onload = () => {
             setLoadingstate(false);
         }
     });
+
+    document.getElementById("update-button").addEventListener("click", async () => {
+        await fetch("/api/v1/update")
+            .then(response => {
+                if (response.ok) {
+                    alert("ok");
+                } else {
+                    alert("error");
+                }
+            });
+    });
+
+    document.getElementById("reset-button").addEventListener("click", async () => {
+        await fetch("/api/v1/reset")
+            .then(response => {
+                if (response.ok) {
+                    alert("ok");
+                } else {
+                    alert("error");
+                }
+            });
+    });
+
+    document.getElementById("reconfig-button").addEventListener("click", async () => {
+        await fetch("/api/v1/reconfig")
+            .then(response => {
+                if (response.ok) {
+                    alert("ok");
+                } else {
+                    alert("error");
+                }
+            });
+    });
 }
 
 //change the text from the answer block, handles markdown

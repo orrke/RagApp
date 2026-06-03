@@ -2,5 +2,8 @@
   "placeholder": "Votre Question",
   "submit": "Rechercher",
   "welcome": "La réponse du modèle s'affichera ici.",
-  "waiting": "Recherche dans les documents..."
+  "waiting": "Recherche dans les documents...",
+  "update": "Mettre à Jour",
+  "reset": "Réinitaliser l'Index",
+  "reconfig": "Recharger la config"
 }

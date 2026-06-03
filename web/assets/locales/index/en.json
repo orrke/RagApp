@@ -2,5 +2,8 @@
   "placeholder": "Your Query",
   "submit": "Search",
   "welcome": "The model's answer will display here",
-  "waiting": "Searching through the document"
+  "waiting": "Searching through the document",
+  "update": "Update Index",
+  "reset": "Reset Index",
+  "reconfig": "Reload server config"
 }

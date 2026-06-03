@@ -1,10 +1,10 @@
 body {
     padding: 0;
     margin: 0;
-
-    /* needed for firefox to display justify-self correctly, for some reason just 'grid' doesn't work. */
     display: inline-grid;
     width: 100%;
+    min-height: 100vh;
+    grid-template-rows: auto auto 1fr auto; /* form | separator | answer-block | settings */
 }
 
 #requestForm {
@@ -37,8 +37,22 @@ body {
 .answer-block {
     display: flex;
     margin: 10px;
+    height: max-content; /* remove this line */
+    overflow-y: auto;    /* optional: scroll if content overflows */
 }
 
 .answer-block > * {
     font-family: Arial, monospace;
+}
+
+.settings-buttons {
+    padding: 10px;
+}
+
+.settings-buttons > button {
+    background: #f4f4f4;
+    border: 1px solid #c1c1c1;
+    border-radius: 15px;
+    height: 30px;
+    margin-right: 10px;
 }

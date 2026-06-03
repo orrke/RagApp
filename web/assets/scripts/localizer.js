@@ -10,6 +10,10 @@ async function setLocale() {
     let submitButton = document.getElementById("submit-button");
     let answerTextBlock = document.getElementById("bot-answer");
 
+    let updateButton = document.getElementById("update-button");
+    let resetButton = document.getElementById("reset-button");
+    let reconfigButton = document.getElementById("reconfig-button");
+
     let locale = await loadLocale(lang);
 
     queryTextBox.placeholder = locale["placeholder"];
@@ -17,6 +21,10 @@ async function setLocale() {
     //Set a span because this is the block for the Markdown
     //So it doesn't have any text inside
     answerTextBlock.innerHTML = `<span>${locale["welcome"]}</span>`
+
+    updateButton.innerHTML = locale["update"];
+    resetButton.innerHTML = locale["reset"];
+    reconfigButton.innerHTML = locale["reconfig"];
 }
 
 //Function to set the localized waiting text
