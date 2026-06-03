@@ -193,23 +193,16 @@ It's pretty straight forward, you can either do it yourself and just run `go mod
 
 You can also use `make {your os}` to build the app for your operating system directly. you can choose between `windows`, `linux` and `macos`, the produced file will go in `dist/rag-server-{os}-{arch}(.exe)`. It will build for arm64 if you're targeting macOS.
 
-If you want to be able to use the Web UI, then you will also need to have the `web/assets` folder available (with the web folder too). 
+If you want to be able to use the Web UI, then you will also need to have the `web/assets` and `web/templates` folders available (with the web folder too). 
 I didn't want to bundle it in an embed fs, that way it's a bit easier to do modifications on the ui. 
 So, in the end, you should end up with this structure:
 ```
 ├── rag-server-{os}-{arch}(.exe)
 └── web
-    └── assets
-            ├── locales
-            │       └── index
-            │           ├── en.json
-            │           └── ...
-            ├── scripts
-            │       ├── main.js
-            │       └── ...
-            └── style
-                    ├── index.css
-                    └── ...
+    ├── assets
+    │       └── ... 
+    └── templates
+            └── ...
 ```
 
 ## Dependencies
